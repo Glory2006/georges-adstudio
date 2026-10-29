@@ -1,73 +1,66 @@
-# React + TypeScript + Vite
+# Georges Studio Admin
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface d’administration de Georges Studio, destinée à gérer les réservations et l’activité d’un studio photo. L’application est construite avec React, TypeScript et Vite. Elle communique avec une API backend et nécessite un compte administrateur pour accéder aux écrans de gestion.
 
-Currently, two official plugins are available:
+## Fonctionnalités
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Tableau de bord avec indicateurs, demandes récentes et catégories de séances.
+- Gestion des réservations : filtres par statut, acceptation ou rejet, modification des horaires et confirmation via WhatsApp.
+- Gestion des disponibilités et création d’un créneau directement pour un client.
+- Gestion des types de séances : description, prix indicatif et publication sur le site.
+- Galerie photo : ajout depuis un fichier ou une URL, gestion des légendes, de l’ordre et de la visibilité.
+- Historique des actions réalisées par les clients et les administrateurs.
+- Paramètres du compte, changement du mot de passe et configuration des horaires du studio selon le rôle.
 
-## React Compiler
+Les données de réservation, de disponibilité et de catégorie sont actualisées automatiquement toutes les 30 secondes lorsque l’administrateur est connecté.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Prérequis
 
-## Expanding the ESLint configuration
+- Node.js 20.19+ ou 22.12+.
+- npm.
+- Le backend de l’application, démarré et accessible. En développement, le proxy Vite transmet `/api` à `http://localhost:3000` par défaut.
+- Un compte administrateur créé et géré côté backend.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Installation et démarrage
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Ouvrez ensuite l’adresse affichée par Vite, généralement [http://localhost:5173](http://localhost:5173). Pour utiliser l’interface, connectez-vous avec les identifiants d’un compte administrateur du backend.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Configuration de l’API
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Par défaut, l’application utilise `/api` comme URL de base. Le serveur de développement Vite redirige ce chemin vers `http://localhost:3000`.
+
+Pour pointer vers une autre API, créez un fichier `.env.local` à la racine du projet :
+
+```env
+VITE_API_URL=https://votre-api.example.com
 ```
+
+La valeur de `VITE_API_URL` est intégrée au code client : n’y placez aucun secret ni identifiant privé. Les accès administrateur doivent rester gérés par le backend.
+
+## Scripts disponibles
+
+| Commande | Description |
+| --- | --- |
+| `npm run dev` | Lance le serveur de développement Vite. |
+| `npm run build` | Vérifie les types TypeScript et génère la version de production dans `dist/`. |
+| `npm run preview` | Sert localement la version de production générée. |
+| `npm run lint` | Exécute ESLint sur le projet. |
+
+## Structure du projet
+
+```text
+src/
+  components/  Éléments partagés : connexion, navigation, interface et horaires
+  lib/api.ts   Appels API, URL de base et normalisation des données
+  pages/       Tableau de bord et écrans de gestion
+  types.ts     Types TypeScript partagés
+```
+
+## Backend
+
+Ce dépôt contient uniquement l’interface frontend. Les données, l’authentification, les rôles et les opérations de gestion sont fournis par une API externe. Les routes utilisées par l’interface sont préfixées par `/admin` (profil, réservations, photos, types de séances, disponibilités, historique et configuration du studio). Le backend doit exposer les routes correspondantes et accepter les jetons d’accès Bearer.
